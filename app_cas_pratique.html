@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Cas Pratique — Droit Admin</title>
+<style>
+html,body{height:100%;overflow:hidden;background-color:#0f0e0c!important;color:#ede8dc!important}
+body{font-family:-apple-system,'SF Pro Text','Segoe UI',sans-serif;font-size:15px;line-height:1.5;display:flex;flex-direction:column;background:#0f0e0c!important}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+
+#header{background:#1a1916!important;border-bottom:1px solid #2e2b22;padding:14px 16px 12px;display:flex;align-items:center;gap:12px;flex-shrink:0}
+#back-btn{width:32px;height:32px;border-radius:50%;background:#232118!important;border:1px solid #2e2b22;color:#9b9078;font-size:18px;cursor:pointer;display:none;align-items:center;justify-content:center;flex-shrink:0}
+#back-btn.visible{display:flex}
+#header-text{flex:1;min-width:0}
+#header-title{font-size:15px;font-weight:700;color:#ede8dc!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#header-sub{font-size:11px;color:#5a5344;margin-top:1px;display:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#header-sub.visible{display:block}
+#step-indicator{display:flex;gap:4px;flex-shrink:0}
+.step-dot{width:6px;height:6px;border-radius:50%;background:#2e2b22;transition:background .3s}
+.step-dot.active{background:#c9a84c}
+.step-dot.done{background:#4a8c5c}
+
+#main{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px;background:#0f0e0c!important}
+.screen{display:none;animation:slideIn .22s ease;background:#0f0e0c!important}
+.screen.active{display:block}
+@keyframes slideIn{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:translateX(0)}}
+
+.intro-label{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:#c9a84c;margin-bottom:8px}
+.intro-title{font-size:22px;font-weight:800;color:#ede8dc!important;margin-bottom:6px;line-height:1.2}
+.intro-sub{font-size:13px;color:#9b9078;margin-bottom:20px}
+.section-label{font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:#5a5344;margin-bottom:8px;margin-top:4px;padding-left:2px}
+
+.card{background:#1a1916!important;border:1px solid #2e2b22;border-radius:12px;padding:14px 16px;margin-bottom:10px;cursor:pointer;display:flex;align-items:center;gap:12px;transition:all .15s}
+.card:active{background:#232118!important;transform:scale(.98)}
+.card-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.icon-gold{background:rgba(201,168,76,.12)}
+.icon-blue{background:rgba(74,114,160,.12)}
+.icon-green{background:rgba(74,140,92,.12)}
+.icon-red{background:rgba(192,74,74,.12)}
+.icon-purple{background:rgba(122,92,168,.12)}
+.icon-teal{background:rgba(42,140,140,.12)}
+.icon-orange{background:rgba(192,122,32,.12)}
+.card-content{flex:1;min-width:0}
+.card-title{font-size:14px;font-weight:600;color:#ede8dc!important;line-height:1.3}
+.card-sub{font-size:12px;color:#9b9078;margin-top:2px;line-height:1.3}
+.card-arrow{color:#5a5344;font-size:14px;flex-shrink:0}
+
+.theme-btn{background:#1a1916!important;border:1px solid #2e2b22;border-radius:10px;padding:12px 14px;margin-bottom:8px;cursor:pointer;display:flex;align-items:flex-start;gap:10px;width:100%;text-align:left;transition:all .15s}
+.theme-btn:active{background:#232118!important;transform:scale(.98)}
+.theme-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;margin-top:3px}
+.dot-gold{background:#c9a84c}.dot-blue{background:#4a72a0}.dot-green{background:#4a8c5c}.dot-red{background:#c04a4a}.dot-purple{background:#7a5ca8}.dot-gray{background:#5a5344}.dot-teal{background:#2a8c8c}
+.theme-btn-text{font-size:13px;font-weight:600;color:#ede8dc!important;line-height:1.3}
+.theme-btn-sub{font-size:11px;color:#9b9078;margin-top:2px;line-height:1.3}
+
+.majeure-q{background:rgba(201,168,76,.12)!important;border:1px solid rgba(201,168,76,.25);border-radius:10px;padding:12px 14px;margin-bottom:14px}
+.majeure-q-label{font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:#c9a84c;margin-bottom:4px;font-weight:700}
+.majeure-q-text{font-size:13px;color:#e8c97e;font-style:italic;line-height:1.45}
+
+.bloc-wrap{margin-bottom:10px}
+.bloc-header{font-size:10px;letter-spacing:.15em;text-transform:uppercase;font-weight:700;padding:9px 14px 7px;border-radius:10px 10px 0 0}
+.bloc-body{font-size:13.5px;line-height:1.78;padding:10px 14px 14px;border-radius:0 0 10px 10px;color:#ede8dc!important}
+
+.b-droit .bloc-header{background:rgba(74,114,160,.15)!important;color:#7eb3e8;border:1px solid rgba(74,114,160,.2);border-bottom:none}
+.b-droit .bloc-body{background:rgba(74,114,160,.07)!important;border:1px solid rgba(74,114,160,.2);border-top:none}
+
+.b-mineure .bloc-header{background:rgba(74,140,92,.15)!important;color:#7ec87e;border:1px solid rgba(74,140,92,.2);border-bottom:none}
+.b-mineure .bloc-body{background:rgba(74,140,92,.07)!important;border:1px solid rgba(74,140,92,.2);border-top:none;font-style:italic}
+
+.b-gold .bloc-header{background:rgba(201,168,76,.15)!important;color:#e8c97e;border:1px solid rgba(201,168,76,.2);border-bottom:none}
+.b-gold .bloc-body{background:rgba(201,168,76,.07)!important;border:1px solid rgba(201,168,76,.2);border-top:none}
+
+.b-warn{background:rgba(201,168,76,.07)!important;border:1px solid rgba(201,168,76,.2);border-radius:10px;padding:10px 14px;margin-top:10px;font-size:13px;color:#e8c97e;line-height:1.6}
+.b-warn::before{content:"⚡ "}
+.b-tip{background:rgba(74,140,92,.07)!important;border:1px solid rgba(74,140,92,.2);border-radius:10px;padding:10px 14px;margin-top:10px;font-size:13px;color:#7ec87e;line-height:1.6}
+.b-tip::before{content:"💡 "}
+.b-alert{background:rgba(192,74,74,.07)!important;border:1px solid rgba(192,74,74,.2);border-radius:10px;padding:10px 14px;margin-top:10px;font-size:13px;color:#e87e7e;line-height:1.6}
+.b-alert::before{content:"🔴 "}
+.b-info{background:rgba(74,114,160,.07)!important;border:1px solid rgba(74,114,160,.2);border-radius:10px;padding:10px 14px;margin:10px 0;font-size:13px;color:#7eb3e8;line-height:1.6}
+
+.majeure-body ul{margin-left:16px;margin-top:4px;margin-bottom:4px}
+.majeure-body li{margin-bottom:5px}
+.majeure-body p{margin-bottom:8px;color:#ede8dc!important}
+.majeure-body p:last-child{margin-bottom:0}
+.cd{color:#7ec87e;font-weight:600}
+.csq{color:#e8b07e;font-weight:600}
+.arret{font-style:italic;font-weight:700;color:#e8c97e}
+.loi{font-weight:700;color:#7eb3e8}
+.strong{font-weight:700;color:#ede8dc!important}
+.ph{color:#c9a84c;background:rgba(201,168,76,.12);border-radius:3px;padding:0 3px;font-style:normal}
+
+.section-divider{display:flex;align-items:center;gap:10px;margin:16px 0 12px}
+.section-divider::before,.section-divider::after{content:'';flex:1;height:1px;background:#2e2b22}
+.section-divider span{font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:#5a5344;white-space:nowrap}
+
+.ex-q-label{font-size:10px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:#7eb3e8;background:rgba(74,114,160,.12)!important;border:1px solid rgba(74,114,160,.2);border-radius:8px;padding:8px 12px;margin:16px 0 8px;display:block}
+.pts{color:#c9a84c;margin-left:6px;font-size:9px}
+.sub-moyen{font-size:11px;color:#5a5344;letter-spacing:.08em;text-transform:uppercase;margin:12px 0 8px;padding-left:2px;display:block}
+
+#bottom-bar{background:#1a1916!important;border-top:1px solid #2e2b22;padding:10px 16px;display:none;gap:8px;flex-shrink:0}
+#bottom-bar.visible{display:flex}
+.bottom-btn{flex:1;padding:11px;border-radius:10px;border:none;font-size:13px;font-weight:700;cursor:pointer;transition:opacity .15s}
+.bottom-btn:active{opacity:.75}
+.btn-primary{background:#c9a84c;color:#0f0e0c}
+.btn-secondary{background:#232118!important;color:#9b9078;border:1px solid #2e2b22}
+
+.copy-toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#4a8c5c;color:white;padding:8px 18px;border-radius:20px;font-size:13px;font-weight:600;opacity:0;transition:opacity .3s;pointer-events:none;z-index:999}
+.copy-toast.show{opacity:1}
+#main::-webkit-scrollbar{width:3px}
+#main::-webkit-scrollbar-thumb{background:#2e2b22;border-radius:3px}
+</style>
+</head>
+<body>
+
+<div id="header">
+  <button id="back-btn" onclick="goBack()">‹</button>
+  <div id="header-text">
+    <div id="header-title">Cas Pratique — DA L2</div>
+    <div id="header-sub"></div>
+  </div>
+  <div id="step-indicator">
+    <div class="step-dot active" id="dot1"></div>
+    <div class="step-dot" id="dot2"></div>
+    <div class="step-dot" id="dot3"></div>
+  </div>
+</div>
+
+<div id="main">
+
+  <!-- HOME -->
+  <div class="screen active" id="screen-q">
+    <div class="intro-label">Droit Administratif · L2 · AMU</div>
+    <div class="intro-title">Que cherches-tu ?</div>
+    <div class="intro-sub">Sélectionne une section</div>
+    <div class="section-label">Outils de rédaction</div>
+    <div class="card" onclick="show('screen-qualif','Qualification des faits',1)">
+      <div class="card-icon icon-teal">🗂️</div>
+      <div class="card-content"><div class="card-title">Qualification des faits</div><div class="card-sub">Rappel + qualification de l'acte et des sujets — avant toute réponse</div></div>
+      <div class="card-arrow">›</div>
+    </div>
+    <div class="card" onclick="show('screen-exemple','Cas résolu — Mme DUPONT',2,true)">
+      <div class="card-icon icon-orange">✅</div>
+      <div class="card-content"><div class="card-title">Cas pratique résolu — Mme DUPONT</div><div class="card-sub">Exemple complet : qualification + 4 questions (sujet Courbaron 2025)</div></div>
+      <div class="card-arrow">›</div>
+    </div>
+    <div class="section-label" style="margin-top:8px">Questions classiques</div>
+    <div class="card" onclick="selectQ('q1')"><div class="card-icon icon-gold">🏛️</div><div class="card-content"><div class="card-title">Q1 — Ordre de juridiction + juridiction précise</div><div class="card-sub">Devant quel ordre ? Devant quelle juridiction ?</div></div><div class="card-arrow">›</div></div>
+    <div class="card" onclick="selectQ('q2')"><div class="card-icon icon-blue">📋</div><div class="card-content"><div class="card-title">Q2 — Choix du recours + recevabilité</div><div class="card-sub">REP, RPC, référé ? Est-il recevable ?</div></div><div class="card-arrow">›</div></div>
+    <div class="card" onclick="selectQ('q3')"><div class="card-icon icon-red">⚖️</div><div class="card-content"><div class="card-title">Q3 — Moyens d'illégalité</div><div class="card-sub">Quels arguments juridiques développer ?</div></div><div class="card-arrow">›</div></div>
+    <div class="card" onclick="selectQ('q4')"><div class="card-icon icon-green">🔍</div><div class="card-content"><div class="card-title">Q4 — Type de contrôle du juge</div><div class="card-sub">Absent / restreint / normal / maximum ?</div></div><div class="card-arrow">›</div></div>
+    <div class="section-label" style="margin-top:8px">Questions spécifiques</div>
+    <div class="card" onclick="selectQ('q5')"><div class="card-icon icon-purple">⚡</div><div class="card-content"><div class="card-title">Q5 — Référés d'urgence</div><div class="card-sub">Procédure pour stopper rapidement l'exécution</div></div><div class="card-arrow">›</div></div>
+    <div class="card" onclick="selectQ('q6')"><div class="card-icon icon-red">🏠</div><div class="card-content"><div class="card-title">Q6 — Voie de fait / emprise irrégulière</div><div class="card-sub">Pénétration irrégulière sur propriété privée</div></div><div class="card-arrow">›</div></div>
+    <div class="card" onclick="selectQ('q7')"><div class="card-icon icon-gold">💰</div><div class="card-content"><div class="card-title">Q7 — Responsabilité administrative</div><div class="card-sub">Demande d'indemnisation</div></div><div class="card-arrow">›</div></div>
+  </div>
+
+  <!-- THEME -->
+  <div class="screen" id="screen-theme">
+    <div class="intro-label">Étape 2 — Thème des faits</div>
+    <div class="intro-title">De quoi s'agit-il ?</div>
+    <div class="intro-sub">Identifie le contexte dans les faits du sujet</div>
+    <div id="theme-options"></div>
+  </div>
+
+  <!-- MAJEURE -->
+  <div class="screen" id="screen-majeure">
+    <div id="majeure-content"></div>
+  </div>
+
+  <!-- QUALIFICATION -->
+  <div class="screen" id="screen-qualif">
+    <div class="intro-label">Avant toute réponse</div>
+    <div class="intro-title">Qualification des faits</div>
+    <div class="intro-sub">Le prof demande un rappel des faits en qualifiant l'acte, les sujets de droit et en résumant ce qui s'est passé</div>
+    <div class="bloc-wrap b-gold">
+      <div class="bloc-header">STRUCTURE DU RAPPEL — 3 TEMPS</div>
+      <div class="bloc-body majeure-body">
+        <ul>
+          <li><span class="strong">1. Qualifier l'acte</span> — nature juridique précise de l'acte contesté</li>
+          <li><span class="strong">2. Qualifier les sujets de droit</span> — qualité juridique de chaque partie</li>
+          <li><span class="strong">3. Résumé factuel concis</span> — 2-3 lignes, chronologique, sans jugement de valeur</li>
+        </ul>
+      </div>
+    </div>
+    <div class="section-divider"><span>1 — Qualifier l'acte</span></div>
+    <div class="bloc-wrap b-droit">
+      <div class="bloc-header">NATURE JURIDIQUE DE L'ACTE CONTESTÉ</div>
+      <div class="bloc-body majeure-body">
+        <ul>
+          <li><span class="strong">AAU réglementaire</span> : portée générale et impersonnelle (arrêté de police, décret…)</li>
+          <li><span class="strong">AAU individuel</span> : vise nommément une personne (sanction disciplinaire, décision de refus…)</li>
+          <li><span class="strong">Acte contractuel</span> : contrat administratif (marché public…) → RPC en principe</li>
+          <li><span class="strong">Acte de gouvernement</span> : rapports entre pouvoirs constitutionnels → aucun recours</li>
+        </ul>
+        <p style="margin-top:8px">Puis préciser : <span class="strong">arrêté / décret / blâme / rétrogradation / délibération…</span></p>
+      </div>
+    </div>
+    <div class="section-divider"><span>2 — Qualifier les sujets de droit</span></div>
+    <div class="bloc-wrap b-droit">
+      <div class="bloc-header">QUALITÉ JURIDIQUE DES PARTIES</div>
+      <div class="bloc-body majeure-body">
+        <p><span class="strong">Le requérant :</span></p>
+        <ul>
+          <li>Fonctionnaire / agent public (catégorie A, B ou C)</li>
+          <li>Usager du service public / personne morale (association…)</li>
+          <li>Tiers à un acte ou à un contrat / contribuable communal</li>
+        </ul>
+        <p style="margin-top:8px"><span class="strong">L'autorité administrative :</span></p>
+        <ul>
+          <li>Nature : État, collectivité territoriale, établissement public…</li>
+          <li>Auteur : maire, préfet, ministre, directeur général…</li>
+          <li>Compétence <span class="strong">locale</span> → TA | compétence <span class="strong">nationale</span> → CE en 1er ressort</li>
+        </ul>
+      </div>
+    </div>
+    <div class="section-divider"><span>3 — Template à adapter</span></div>
+    <div class="bloc-wrap b-mineure">
+      <div class="bloc-header">FORMULE TYPE DE QUALIFICATION DES FAITS</div>
+      <div class="bloc-body majeure-body">
+        <p>En l'espèce, <span class="ph">[Nom]</span>, <span class="ph">[qualité : fonctionnaire rédactrice de catégorie B / présidente de l'association X…]</span>, entend contester <span class="ph">[nature de l'acte : un arrêté / un blâme]</span> du <span class="ph">[date]</span> pris par <span class="ph">[auteur : le maire de / le préfet de…]</span>, <span class="ph">[autorité locale / nationale]</span>.</p>
+        <p>Cet acte constitue un <span class="ph">[AAU individuel / AAU réglementaire]</span> en ce qu'il <span class="ph">[produit des effets à l'égard d'une personne nommément désignée / s'applique à une catégorie de personnes]</span>.</p>
+        <p>Les faits sont les suivants : <span class="ph">[résumé chronologique en 2-3 lignes, sans jugement de valeur]</span>.</p>
+      </div>
+    </div>
+    <div class="b-tip">Rester factuel et neutre. Ne pas trancher sur la légalité dans ce rappel.</div>
+    <div class="b-warn">Ne pas confondre la qualification (description objective) avec l'appréciation de la légalité de l'acte.</div>
+    <div style="height:16px"></div>
+  </div>
+
+  <!-- EXEMPLE RÉSOLU -->
+  <div class="screen" id="screen-exemple">
+    <div class="intro-label">Cas pratique résolu · Sujet Courbaron 2025</div>
+    <div class="intro-title">Mme DUPONT c/ Préfecture de Toulon</div>
+    <div class="intro-sub">Date fictive : 15 juillet 2025 · 4 questions résolues</div>
+    <div class="b-info">Faits : Mme DUPONT, fonctionnaire rédactrice, a critiqué l'organisation du service. Rapport du <strong>12 mars 2020</strong>. Procédure disciplinaire engagée le <strong>11 mai 2025</strong> (5 ans après) avec délai de <strong>24h</strong> pour s'expliquer. Arrêté du <strong>14 mai 2025</strong>, signé par le <strong>vice-directeur général des services</strong>, notifié le même jour → <strong>blâme</strong>.</div>
+
+    <span class="ex-q-label">📎 Qualification des faits</span>
+    <div class="bloc-wrap b-gold">
+      <div class="bloc-header">RAPPEL ET QUALIFICATION DES FAITS</div>
+      <div class="bloc-body majeure-body">
+        <p>En l'espèce, Mme DUPONT, <span class="strong">fonctionnaire rédactrice de catégorie B</span> affectée au sein de la préfecture de Toulon (Var), entend contester un <span class="strong">arrêté du 14 mai 2025</span> lui infligeant un blâme, pris par le vice-directeur général des services — autorité administrative locale de l'État.</p>
+        <p>Cet acte constitue un <span class="strong">acte administratif unilatéral individuel</span> à caractère de sanction disciplinaire, en ce qu'il produit des effets de droit à l'égard d'une personne nominativement désignée.</p>
+        <p>Les faits sont les suivants : à la suite d'un rapport du 12 mars 2020 consignant des critiques de Mme DUPONT sur l'organisation du service, l'administration a engagé cinq ans plus tard (11 mai 2025) une procédure disciplinaire en n'accordant qu'un délai de vingt-quatre heures pour présenter des observations, aboutissant au blâme du 14 mai 2025, notifié le même jour.</p>
+      </div>
+    </div>
+
+    <span class="ex-q-label">Question 1 — Ordre de juridiction + juridiction précise <span class="pts">5 pts</span></span>
+    <div class="bloc-wrap b-droit">
+      <div class="bloc-header">EN DROIT</div>
+      <div class="bloc-body majeure-body">
+        <p>Il existe en France deux ordres de juridictions : JA et JJ. La <span class="strong">loi des 16 et 24 août 1790</span> interdit aux juges judiciaires d'intervenir dans les affaires de l'administration. La compétence du JA pour statuer <span class="csq">(csq1)</span> sur les actes des personnes publiques <span class="cd">(cd1)</span> est un <span class="strong">PFRLR</span> (CC, 23 janv. 1987, <span class="arret">Conseil de la concurrence</span>). En matière de contentieux des agents publics, JA compétent <span class="csq">(csq2)</span> pour les sanctions disciplinaires <span class="cd">(cd2)</span>. Art. <span class="loi">L. 311-1 CJA</span> : TA = juge de droit commun en 1ère instance <span class="csq">(csq3)</span>. TA territorialement compétent = ressort de l'autorité auteur de l'acte <span class="cd">(cd3)</span> (art. <span class="loi">R. 312-1 CJA</span>). Si autorité nationale → CE en 1er ressort (art. <span class="loi">R. 311-1 CJA</span>) <span class="cd">(cd4)</span>.</p>
+      </div>
+    </div>
+    <div class="bloc-wrap b-mineure">
+      <div class="bloc-header">EN L'ESPÈCE → EN CONSÉQUENCE</div>
+      <div class="bloc-body majeure-body">
+        <p>En l'espèce, le blâme est une sanction disciplinaire prononcée à l'encontre de Mme DUPONT, fonctionnaire, affectant sa situation individuelle <span class="cd">(cd2)</span>. Le vice-directeur général des services de la préfecture de Toulon est une autorité locale dont le siège se trouve dans le Var <span class="cd">(cd3)</span>. Ce n'est pas une autorité nationale → art. R. 311-1 inapplicable <span class="cd">(cd4 non rempli)</span>.</p>
+        <p><span class="strong">EN CONSÉQUENCE</span>, JA compétent <span class="csq">(csq1+2)</span> → <span class="strong">tribunal administratif de Toulon</span> en 1er ressort <span class="csq">(csq3)</span>.</p>
+      </div>
+    </div>
+
+    <span class="ex-q-label">Question 2 — Choix du recours + recevabilité <span class="pts">7 pts</span></span>
+    <div class="bloc-wrap b-droit">
+      <div class="bloc-header">EN DROIT — Choix du recours</div>
+      <div class="bloc-body majeure-body">
+        <p>Le <span class="strong">REP</span> (<span class="arret">CE, 1950, Dame Lamotte</span>, art. <span class="loi">L. 100-2 CRPA</span>) tend à l'annulation d'un AAU pour illégalité <span class="csq">(csq1)</span>. Si Mme DUPONT souhaitait la réformation ou une indemnisation → RPC (<span class="arret">CE, 2013, Dahan</span>).</p>
+      </div>
+    </div>
+    <div class="bloc-wrap b-droit">
+      <div class="bloc-header">EN DROIT — Recevabilité (3 conditions)</div>
+      <div class="bloc-body majeure-body">
+        <p><span class="strong">① Acte</span> <span class="cd">(cd1)</span> : AAU décisoire faisant grief. <span class="strong">② Intérêt à agir</span> <span class="cd">(cd2)</span> : le destinataire d'une sanction a un intérêt direct et certain <span class="csq">(csq2)</span>. <span class="strong">③ Délai</span> <span class="cd">(cd3)</span> : <span class="strong">2 mois francs</span> depuis la <span class="strong">notification</span> (art. <span class="loi">R. 421-1 CJA</span>) <span class="csq">(csq3)</span>.</p>
+      </div>
+    </div>
+    <div class="bloc-wrap b-mineure">
+      <div class="bloc-header">EN L'ESPÈCE → EN CONSÉQUENCE</div>
+      <div class="bloc-body majeure-body">
+        <p>Le blâme est un AAU individuel faisant grief <span class="cd">(cd1)</span>. Mme DUPONT = destinataire directe → intérêt certain <span class="cd">(cd2)</span>. Notifié le 14 mai 2025 ; le délai franc de 2 mois court jusqu'au 15 juillet 2025 — date fictive → action immédiate requise <span class="cd">(cd3)</span>.</p>
+        <p><span class="strong">EN CONSÉQUENCE</span>, REP recevable <span class="csq">(csq1+2+3)</span>, sous réserve d'une saisine immédiate.</p>
+      </div>
+    </div>
+
+    <span class="ex-q-label">Question 3 — Deux moyens d'illégalité <span class="pts">6 pts</span></span>
+    <span class="sub-moyen">Moyen 1 — Illégalité externe : prescription de 3 ans</span>
+    <div class="bloc-wrap b-droit">
+      <div class="bloc-header">EN DROIT — Prescription (art. L532-2 CGFP)</div>
+      <div class="bloc-body majeure-body">
+        <p>Art. <span class="loi">L. 532-2 CGFP</span> : aucune procédure disciplinaire au-delà de <span class="strong">3 ans</span> à compter de la connaissance effective des faits <span class="cd">(cd1)</span> <span class="csq">(csq1)</span>. Passé ce délai → faits ne peuvent plus être invoqués <span class="csq">(csq2)</span>. Sanction prononcée hors délai → annulation <span class="csq">(csq3)</span>.</p>
+      </div>
+    </div>
+    <div class="bloc-wrap b-mineure">
+      <div class="bloc-header">EN L'ESPÈCE → EN CONSÉQUENCE</div>
+      <div class="bloc-body majeure-body">
+        <p>Le rapport du <span class="strong">12 mars 2020</span> atteste la connaissance effective des faits <span class="cd">(cd1)</span>. La procédure n'a été engagée que le <span class="strong">11 mai 2025</span>, soit <span class="strong">5 ans et 2 mois</span> plus tard. Aucune poursuite pénale n'a interrompu ce délai.</p>
+        <p><span class="strong">EN CONSÉQUENCE</span>, procédure prescrite <span class="csq">(csq2)</span> → annulation <span class="csq">(csq3)</span>. Moyen le plus fort en l'espèce.</p>
+      </div>
+    </div>
+    <span class="sub-moyen">Moyen 2 — Illégalité externe : droits de la défense insuffisants</span>
+    <div class="bloc-wrap b-droit">
+      <div class="bloc-header">EN DROIT — Droits de la défense (art. L532-4 CGFP)</div>
+      <div class="bloc-body majeure-body">
+        <p>PGD des droits de la défense (<span class="arret">CE, 1944, Trompier-Gravier</span>). Art. <span class="loi">L. 532-4 CGFP</span> : communication du dossier <span class="cd">(cd1)</span>, assistance de défenseurs <span class="cd">(cd2)</span>, <span class="strong">délai suffisant</span> <span class="cd">(cd3)</span>. Délai de 24h = insuffisant → vice de procédure → annulation (<span class="arret">CE, 2011, Danthony</span>) <span class="csq">(csq1)</span>.</p>
+      </div>
+    </div>
+    <div class="bloc-wrap b-mineure">
+      <div class="bloc-header">EN L'ESPÈCE → EN CONSÉQUENCE</div>
+      <div class="bloc-body majeure-body">
+        <p>L'administration a imparti à Mme DUPONT un délai de <span class="strong">24 heures</span> pour présenter ses observations — insuffisant pour consulter le dossier et préparer sa défense <span class="cd">(cd3)</span> → privée d'une garantie essentielle.</p>
+        <p><span class="strong">EN CONSÉQUENCE</span>, vice de procédure substantiel (Danthony) → annulation <span class="csq">(csq1)</span>.</p>
+      </div>
+    </div>
+    <div class="b-alert">Blâme = groupe 1 (art. L533-1 CGFP) → conseil de discipline NON obligatoire. Ce moyen ne s'applique pas ici. La prescription (5 ans > 3 ans) reste le moyen décisif.</div>
+
+    <span class="ex-q-label">Question 4 — Type de contrôle du juge <span class="pts">2 pts</span></span>
+    <div class="bloc-wrap b-droit">
+      <div class="bloc-header">EN DROIT</div>
+      <div class="bloc-body majeure-body">
+        <p>L'intensité du contrôle est proportionnelle à la compétence liée. En matière de sanctions disciplinaires, contrôle à deux niveaux. Sur la <span class="strong">qualification juridique des faits</span> : <span class="strong">contrôle normal (entier)</span> <span class="csq">(csq1)</span> — exactitude matérielle (<span class="arret">CE, 1916, Camino</span>) + les faits constituent-ils une faute ? <span class="cd">(cd1)</span> (<span class="arret">CE, 2013, Dahan</span>). Sur l'<span class="strong">intensité de la sanction</span> : <span class="strong">contrôle maximum</span> de proportionnalité <span class="csq">(csq2)</span> — sanction non disproportionnée par rapport à la gravité des fautes <span class="cd">(cd2)</span> (<span class="arret">CE, 2013, Dahan</span>).</p>
+      </div>
+    </div>
+    <div class="bloc-wrap b-mineure">
+      <div class="bloc-header">EN L'ESPÈCE → EN CONSÉQUENCE</div>
+      <div class="bloc-body majeure-body">
+        <p>Le juge exercera un <span class="strong">contrôle normal</span> <span class="csq">(csq1)</span> : des critiques verbales sur l'organisation du service constituent-elles une faute disciplinaire ? <span class="cd">(cd1)</span> — on peut en douter. Puis un <span class="strong">contrôle maximum</span> sur l'intensité <span class="csq">(csq2)</span> : le blâme est-il proportionné à des critiques verbales sans violence ? <span class="cd">(cd2)</span></p>
+        <p><span class="strong">EN CONSÉQUENCE</span>, contrôle <span class="strong">normal sur les faits</span> + contrôle <span class="strong">maximum sur l'intensité</span> (Dahan 2013) → réelles chances d'annulation.</p>
+      </div>
+    </div>
+    <div class="b-tip">Résumé : ① Prescription 5 ans > 3 ans (L532-2) = moyen décisif ② Droits de la défense 24h (L532-4) ③ Contrôle normal + maximum (Dahan).</div>
+    <div style="height:20px"></div>
+  </div>
+
+</div>
+
+<div id="bottom-bar">
+  <button class="bottom-btn btn-secondary" onclick="goBack()">← Retour</button>
+  <button class="bottom-btn btn-primary" onclick="copyPage()">Copier</button>
+</div>
+<div class="copy-toast" id="toast">✓ Copié !</div>
+
+<script>
+const Q={q1:{label:"Q1 — Ordre de juridiction + juridiction précise",themes:[{id:"q1-fonct",label:"Fonctionnaire / agent public",sub:"Sanction disciplinaire, suspension, blâme…",dot:"dot-gold"},{id:"q1-police",label:"Police administrative (maire)",sub:"Couvre-feu, interdiction, arrêté de police…",dot:"dot-blue"},{id:"q1-voiefait",label:"Voie de fait / emprise irrégulière",sub:"Pénétration sur propriété privée sans DUP",dot:"dot-red"}]},q2:{label:"Q2 — Choix du recours + recevabilité",themes:[{id:"q2-rep-police",label:"REP contre un arrêté de police",sub:"Association ou usager contestant un arrêté réglementaire",dot:"dot-blue"},{id:"q2-rep-fonct",label:"REP contre une sanction disciplinaire",sub:"Fonctionnaire voulant faire annuler sa sanction",dot:"dot-gold"},{id:"q2-rpc",label:"RPC indemnitaire",sub:"Demande de réparation d'un préjudice",dot:"dot-red"}]},q3:{label:"Q3 — Moyens d'illégalité",themes:[{id:"q3-prescr",label:"Prescription 3 ans — art. L532-2 CGFP",sub:"Rapport daté de + de 3 ans avant la procédure",dot:"dot-red"},{id:"q3-defense",label:"Droits de la défense — art. L532-4 CGFP",sub:"Délai 24h insuffisant, pas d'accès au dossier",dot:"dot-gold"},{id:"q3-conseil",label:"Absence conseil de discipline — art. L532-5 CGFP",sub:"Sanction groupe 2-3-4 sans consultation préalable",dot:"dot-gold"},{id:"q3-incomp-disc",label:"Incompétence du signataire (disciplinaire)",sub:"Vice-directeur, adjoint sans délégation régulière",dot:"dot-purple"},{id:"q3-disprop-disc",label:"Disproportion de la sanction — Dahan 2013",sub:"Sanction trop sévère par rapport aux faits",dot:"dot-green"},{id:"q3-incomp-pol",label:"Incompétence du maire / dépassement territorial",sub:"Arrêté dépassant la commune, adjoint sans délégation",dot:"dot-blue"},{id:"q3-detour",label:"Détournement de pouvoir",sub:"But économique ou discriminatoire au lieu de l'ordre public",dot:"dot-red"},{id:"q3-prop-pol",label:"Disproportion mesure de police — Benjamin 1933",sub:"Interdiction générale et absolue sans exception",dot:"dot-blue"},{id:"q3-expropr",label:"Absence de DUP / expropriation irrégulière",sub:"Travaux sans déclaration d'utilité publique préalable",dot:"dot-red"}]},q4:{label:"Q4 — Type de contrôle du juge",themes:[{id:"q4-absent",label:"Absence de contrôle (compétence totalement discrétionnaire)",sub:"Amnistie, légion d'honneur, notes d'examen",dot:"dot-gray"},{id:"q4-restreint",label:"Contrôle restreint — erreur manifeste d'appréciation",sub:"Compétence discrétionnaire : organisation du service, urbanisme…",dot:"dot-purple"},{id:"q4-normal",label:"Contrôle normal (entier / complet)",sub:"Compétence liée : application d'un texte précis",dot:"dot-blue"},{id:"q4-max-sanct",label:"Contrôle maximum — sanction disciplinaire (Dahan 2013)",sub:"Normal sur les faits + maximum sur l'intensité",dot:"dot-gold"},{id:"q4-max-police",label:"Contrôle maximum — mesure de police (Benjamin 1933)",sub:"Extrinsèque : adapté, nécessaire, proportionné",dot:"dot-blue"},{id:"q4-max-expro",label:"Contrôle maximum — expropriation (Ville nouvelle Est 1971)",sub:"Intrinsèque : bilan coûts / avantages",dot:"dot-red"}]},q5:{label:"Q5 — Référés d'urgence",themes:[{id:"q5-referes",label:"Référé suspension vs référé liberté",sub:"Comparer les deux voies et recommander la plus adaptée",dot:"dot-purple"}]},q6:{label:"Q6 — Voie de fait",themes:[{id:"q6-voiefait",label:"Voie de fait complète — TC 2013 Bergoend",sub:"Répartition JA / JJ",dot:"dot-red"}]},q7:{label:"Q7 — Responsabilité administrative",themes:[{id:"q7-resp",label:"Maintien de l'ordre — dommages à des tiers",sub:"Responsabilité pour faute + sans faute pour risque",dot:"dot-red"}]}};
+
+const M={
+"q1-fonct":{question:"Devant quel ordre de juridiction ? Devant quelle juridiction précise ?",blocs:[{label:"EN DROIT",html:`<p>Deux ordres de juridictions. <span class="strong">Loi 16-24 août 1790</span> : séparation JA/JJ. Compétence du JA pour statuer <span class="csq">(csq1)</span> sur les actes des personnes publiques <span class="cd">(cd1)</span> = <span class="strong">PFRLR</span> (CC, 23 janv. 1987, <span class="arret">Conseil de la concurrence</span>). JA compétent <span class="csq">(csq2)</span> pour les sanctions disciplinaires des agents publics <span class="cd">(cd2)</span>. Art. <span class="loi">L. 311-1 CJA</span> : TA = juge de droit commun en 1ère instance <span class="csq">(csq3)</span>. TA territorialement compétent = ressort de l'autorité auteur de l'acte <span class="cd">(cd3)</span> (art. <span class="loi">R. 312-1 CJA</span>). Autorité nationale → CE en 1er ressort (art. <span class="loi">R. 311-1 CJA</span>) <span class="cd">(cd4)</span>.</p>`}],mineure:`EN L'ESPÈCE, le <span class="ph">[blâme / rétrogradation]</span> est une sanction disciplinaire prononcée à l'encontre de <span class="ph">[Nom]</span>, fonctionnaire, affectant sa situation individuelle <span class="cd">(cd2)</span>. L'auteur — <span class="ph">[vice-directeur / préfet de…]</span> — est une autorité locale dont le siège se trouve dans le ressort du TA de <span class="ph">[ville]</span> <span class="cd">(cd3)</span>. Pas une autorité nationale <span class="cd">(cd4 non rempli)</span>.<br><br>EN CONSÉQUENCE, JA compétent <span class="csq">(csq1+2)</span> → TA de <span class="ph">[ville]</span> en 1er ressort <span class="csq">(csq3)</span>.`,warn:"Auteur local (préfet, directeur de service local) → TA. Autorité nationale (ministre) → CE en 1er ressort (R311-1)."},
+"q1-police":{question:"Devant quel ordre de juridiction ? Devant quelle juridiction précise ?",blocs:[{label:"EN DROIT",html:`<p><span class="strong">Loi 16-24 août 1790</span> : séparation JA/JJ. JA compétent <span class="csq">(csq1)</span> pour les arrêtés de police municipale <span class="cd">(cd1)</span> (arts. <span class="loi">L. 2212-1 et L. 2212-2 CGCT</span>). Art. <span class="loi">L. 311-1 CJA</span> : TA = juge de droit commun en 1ère instance <span class="csq">(csq2)</span>. Acte d'une autorité locale <span class="cd">(cd2)</span> → TA du ressort de la commune (art. <span class="loi">R. 312-1 CJA</span>) <span class="csq">(csq3)</span>.</p>`}],mineure:`EN L'ESPÈCE, l'arrêté du <span class="ph">[date]</span> pris par le maire de <span class="ph">[commune]</span> portant <span class="ph">[objet]</span> est un acte de police municipale → JA compétent <span class="cd">(cd1)</span>. Autorité locale → TA de <span class="ph">[ville]</span> <span class="cd">(cd2)</span>.<br><br>EN CONSÉQUENCE, JA compétent <span class="csq">(csq1)</span> → TA de <span class="ph">[ville]</span> <span class="csq">(csq2+3)</span>.`,tip:"Arrêté de maire = acte local → JA → TA territorialement compétent."},
+"q1-voiefait":{question:"Quel ordre de juridiction ? Comment se répartit la compétence JA/JJ ?",blocs:[{label:"EN DROIT",html:`<p>Par exception, la <span class="strong">voie de fait</span> confère compétence au JJ (<span class="arret">TC, 17 juin 2013, Bergoend</span>). Deux critères cumulatifs. <span class="strong">Objectif</span> : exécution forcée irrégulière <span class="cd">(cd1a)</span> OU décision insusceptible de se rattacher à un pouvoir administratif <span class="cd">(cd1b)</span>. <span class="strong">Subjectif</span> : atteinte à la liberté individuelle (art. 66C) <span class="cd">(cd2a)</span> OU <span class="strong">extinction du droit de propriété</span> <span class="cd">(cd2b)</span> — non une simple atteinte. JA : illégalité + injonction <span class="csq">(csq2)</span>. JJ : indemnités <span class="csq">(csq3)</span>.</p>`}],mineure:`EN L'ESPÈCE, les agents de <span class="ph">[commune]</span> ont, le <span class="ph">[date]</span>, pénétré sur le terrain de <span class="ph">[Nom]</span> et procédé à <span class="ph">[actes]</span> sans titre légal → exécution forcée irrégulière <span class="cd">(cd1a)</span>. Les destructions tendent à éteindre le droit de propriété <span class="cd">(cd2b)</span>.<br><br>EN CONSÉQUENCE, voie de fait caractérisée. JA : faire cesser l'atteinte <span class="csq">(csq2)</span>. JJ : indemnités <span class="csq">(csq3)</span>.`,warn:"Simple atteinte → JA. Extinction du droit de propriété → JJ pour les indemnités."},
+"q2-rep-police":{question:"Quel type de recours au fond ? Serait-il recevable ?",blocs:[{label:"EN DROIT — Choix du recours",html:`<p><span class="strong">REP</span> (<span class="arret">CE, 1950, Dame Lamotte</span>, art. <span class="loi">L. 100-2 CRPA</span>) : annulation d'un AAU pour illégalité <span class="csq">(csq1)</span>. À distinguer du RPC (droit subjectif, indemnisation).</p>`},{label:"EN DROIT — Recevabilité",html:`<p><span class="strong">① Acte</span> <span class="cd">(cd1)</span> : AAU réglementaire faisant grief <span class="csq">(csq1)</span>. <span class="strong">② Intérêt à agir</span> <span class="cd">(cd2)</span> : large en REP. Association = intérêt si mesure entre dans son objet social (<span class="arret">CE, 1906, Patrons-Coifeurs</span>) <span class="csq">(csq2)</span>. <span class="strong">③ Délai</span> <span class="cd">(cd3)</span> : <span class="strong">2 mois francs</span> depuis la <span class="strong">publication</span> (art. <span class="loi">R. 421-1 CJA</span>) <span class="csq">(csq3)</span>.</p>`}],mineure:`EN L'ESPÈCE, l'arrêté du <span class="ph">[date]</span>, publié le <span class="ph">[date]</span>, est un AAU réglementaire faisant grief <span class="cd">(cd1)</span>. L'association <span class="ph">[nom]</span>, dont l'objet est <span class="ph">[objet]</span>, est directement affectée <span class="cd">(cd2)</span>. Requête dans le délai de 2 mois depuis la publication <span class="cd">(cd3)</span>.<br><br>EN CONSÉQUENCE, REP recevable <span class="csq">(csq1+2+3)</span>.`},
+"q2-rep-fonct":{question:"Quel type de recours ? Serait-il recevable ?",blocs:[{label:"EN DROIT — Choix",html:`<p><span class="strong">REP</span> (<span class="arret">CE, 1950, Dame Lamotte</span>) : annulation de l'AAU pour illégalité <span class="csq">(csq1)</span>. Si réformation/indemnisation → RPC (<span class="arret">Dahan 2013</span>).</p>`},{label:"EN DROIT — Recevabilité",html:`<p><span class="strong">① Acte</span> <span class="cd">(cd1)</span> : AAU individuel faisant grief <span class="csq">(csq1)</span>. <span class="strong">② Intérêt</span> <span class="cd">(cd2)</span> : destinataire = intérêt direct et certain <span class="csq">(csq2)</span>. <span class="strong">③ Délai</span> <span class="cd">(cd3)</span> : <span class="strong">2 mois francs</span> depuis la <span class="strong">notification</span> (art. <span class="loi">R. 421-1 CJA</span>) <span class="csq">(csq3)</span>.</p>`}],mineure:`EN L'ESPÈCE, <span class="ph">[Nom]</span> demande l'annulation du <span class="ph">[blâme / rétrogradation]</span> du <span class="ph">[date]</span>, notifié le <span class="ph">[date]</span> — AAU individuel faisant grief <span class="cd">(cd1)</span>. Intérêt direct comme destinataire <span class="cd">(cd2)</span>. Requête dans le délai de 2 mois depuis notification <span class="cd">(cd3)</span>.<br><br>EN CONSÉQUENCE, REP recevable <span class="csq">(csq1+2+3)</span>.`},
+"q2-rpc":{question:"Quel type de recours pour obtenir réparation ?",blocs:[{label:"EN DROIT",html:`<p><span class="strong">RPC</span> (<span class="arret">CE, 1912, Lafage</span>) : droit subjectif lésé → condamnation pécuniaire <span class="csq">(csq1+2)</span>. Avocat obligatoire. Recevabilité : acte/fait <span class="cd">(cd1)</span> + droit subjectif lésé <span class="cd">(cd2)</span> + 2 mois après décision préalable de rejet <span class="cd">(cd3)</span> <span class="csq">(csq3)</span>.</p>`}],mineure:`EN L'ESPÈCE, <span class="ph">[Nom]</span> subit <span class="ph">[préjudice]</span> du fait de <span class="ph">[fait dommageable]</span> → RPC <span class="cd">(cd1+2)</span>. Demande préalable le <span class="ph">[date]</span> ; silence 2 mois = rejet implicite <span class="cd">(cd3)</span>.<br><br>EN CONSÉQUENCE, RPC dans les 2 mois du rejet implicite <span class="csq">(csq1+2+3)</span>.`,warn:"Demande préalable indemnitaire obligatoire avant tout RPC. Silence 2 mois = rejet implicite."},
+"q3-prescr":{question:"Quels moyens ? — Prescription 3 ans (art. L532-2 CGFP)",blocs:[{label:"EN DROIT — Moyen externe : prescription",html:`<p>Art. <span class="loi">L. 532-2 CGFP</span> : aucune procédure disciplinaire au-delà de <span class="strong">3 ans</span> à compter de la connaissance effective des faits <span class="cd">(cd1)</span> <span class="csq">(csq1)</span>. Passé ce délai → faits ne peuvent plus être invoqués <span class="csq">(csq2)</span>. Sanction hors délai → annulation <span class="csq">(csq3)</span>. Sauf interruption par poursuites pénales.</p>`}],mineure:`EN L'ESPÈCE, le rapport du <span class="ph">[date rapport]</span> atteste la connaissance effective des faits <span class="cd">(cd1)</span>. La procédure a été engagée le <span class="ph">[date engagement]</span> soit <span class="ph">[X ans X mois]</span> plus tard, excédant les 3 ans. Aucune poursuite pénale n'a interrompu ce délai.<br><br>EN CONSÉQUENCE, procédure prescrite <span class="csq">(csq2)</span> → annulation <span class="csq">(csq3)</span>.`,tip:"Calculer : date rapport → date engagement procédure. Si > 3 ans → prescription. Moyen décisif dans les sujets Dupont (5 ans > 3 ans)."},
+"q3-defense":{question:"Quels moyens ? — Droits de la défense (art. L532-4 CGFP)",blocs:[{label:"EN DROIT — Moyen externe : droits de la défense",html:`<p>PGD des droits de la défense (<span class="arret">CE, 1944, Trompier-Gravier</span>). Art. <span class="loi">L. 532-4 CGFP</span> : communication du dossier <span class="cd">(cd1)</span>, assistance de défenseurs <span class="cd">(cd2)</span>, <span class="strong">délai suffisant</span> <span class="cd">(cd3)</span>. Délai de 24h = insuffisant → vice de procédure → annulation (<span class="arret">CE, 2011, Danthony</span>) <span class="csq">(csq1+2)</span>.</p>`}],mineure:`EN L'ESPÈCE, <span class="ph">[Nom]</span> a disposé de <span class="ph">[24h / X heures]</span> — insuffisant pour consulter le dossier et préparer sa défense <span class="cd">(cd3)</span> → privée d'une garantie essentielle.<br><br>EN CONSÉQUENCE, vice de procédure substantiel (Danthony) → annulation <span class="csq">(csq1+2)</span>.`},
+"q3-conseil":{question:"Quels moyens ? — Absence de conseil de discipline (art. L532-5 CGFP)",blocs:[{label:"EN DROIT — Moyen externe : absence de conseil de discipline",html:`<p>Art. <span class="loi">L. 532-5 CGFP</span> : toute sanction hors <span class="strong">groupe 1</span> (avertissement, blâme, exclusion ≤ 3j) exige consultation préalable du conseil de discipline <span class="cd">(cd1+cd2)</span> (art. <span class="loi">L. 533-1 CGFP</span>). Son absence → vice substantiel → annulation <span class="csq">(csq1)</span>.</p>`}],mineure:`EN L'ESPÈCE, la sanction — <span class="ph">[rétrogradation / exclusion de X jours]</span> — est du groupe <span class="ph">[2/3]</span> de l'art. L. 533-1 CGFP <span class="cd">(cd2)</span>. Aucune saisine du conseil de discipline n'a eu lieu <span class="cd">(cd1)</span>.<br><br>EN CONSÉQUENCE, vice de procédure substantiel → annulation <span class="csq">(csq1)</span>.`,warn:"⚠️ Blâme = groupe 1 → conseil de discipline NON obligatoire. Ce moyen ne s'applique PAS au blâme ! Rétrogradation = groupe 3 → obligatoire."},
+"q3-incomp-disc":{question:"Quels moyens ? — Incompétence du signataire",blocs:[{label:"EN DROIT — Moyen externe : incompétence",html:`<p>Auteur d'un AAU = doit avoir l'habilitation juridique <span class="cd">(cd1)</span> → sinon incompétence → annulation <span class="csq">(csq1)</span> (<span class="arret">CE, 2021, CGT</span>). Pouvoir disciplinaire = autorité investie du pouvoir de nomination, sauf délégation expresse et régulière <span class="cd">(cd2)</span>. Vice-directeur / adjoint sans délégation → incompétent <span class="csq">(csq2)</span>.</p>`}],mineure:`EN L'ESPÈCE, l'arrêté a été signé par <span class="ph">[vice-directeur / adjoint]</span>. Aucune délégation expresse et régulière n'est établie <span class="cd">(cd2)</span> → signataire incompétent <span class="cd">(cd1)</span>.<br><br>EN CONSÉQUENCE, incompétence → annulation <span class="csq">(csq1+2)</span>.`},
+"q3-disprop-disc":{question:"Quels moyens ? — Disproportion de la sanction (Dahan)",blocs:[{label:"EN DROIT — Moyen interne : disproportion",html:`<p>Contrôle de légalité interne (<span class="arret">CE, 2013, Dahan</span>) : faits doivent justifier une sanction <span class="cd">(cd1)</span> et sanction doit être <span class="strong">proportionnée</span> à la gravité des fautes <span class="cd">(cd2)</span>. Sanction disproportionnée → illégalité interne → annulation <span class="csq">(csq1)</span>.</p>`}],mineure:`EN L'ESPÈCE, les faits — <span class="ph">[critiques verbales / altercation…]</span> — peuvent constituer un manquement <span class="cd">(cd1)</span> mais la sanction — <span class="ph">[blâme / rétrogradation]</span> — paraît disproportionnée : <span class="ph">[simples critiques orales, pas de violence]</span> <span class="cd">(cd2)</span>.<br><br>EN CONSÉQUENCE, disproportion → illégalité interne → annulation <span class="csq">(csq1)</span>.`},
+"q3-incomp-pol":{question:"Quels moyens ? — Incompétence du maire / dépassement territorial",blocs:[{label:"EN DROIT — Moyen externe : incompétence",html:`<p>Police municipale = compétence du <span class="strong">maire</span> (arts. <span class="loi">L. 2212-1 et L. 2212-2 CGCT</span>) <span class="cd">(cd1)</span>. Adjoint = délégation expresse obligatoire ; sinon → incompétence <span class="csq">(csq1)</span>. Compétence territoriale = territoire de la commune uniquement <span class="cd">(cd2)</span>. Mesure étendue au-delà → incompétence territoriale <span class="csq">(csq2)</span>.</p>`}],mineure:`EN L'ESPÈCE, arrêté signé par <span class="ph">[adjoint]</span> sans délégation établie → incompétence <span class="csq">(csq1)</span>. Applicable sur <span class="ph">[métropole / département]</span> alors que le maire n'est compétent que sur sa commune <span class="cd">(cd2)</span> → incompétence territoriale <span class="csq">(csq2)</span>.<br><br>EN CONSÉQUENCE, incompétence → annulation.`},
+"q3-detour":{question:"Quels moyens ? — Détournement de pouvoir",blocs:[{label:"EN DROIT — Moyen interne : détournement de pouvoir",html:`<p>Détournement de pouvoir = usage des pouvoirs dans un but autre que celui pour lequel ils ont été conférés <span class="cd">(cd1)</span> → illégalité interne <span class="csq">(csq1)</span> (<span class="arret">CE, 1995, Syndicat inspecteurs généraux</span>). Police municipale = seul but : ordre public (arts. <span class="loi">L. 2212-1+2 CGCT</span>) <span class="cd">(cd2)</span>. But économique ou discriminatoire → détournement <span class="csq">(csq2)</span>.</p>`}],mineure:`EN L'ESPÈCE, les motifs de l'arrêté visent expressément <span class="ph">["la pérennité du tourisme" / autre but économique]</span> — étranger à l'ordre public <span class="cd">(cd2)</span>. Pouvoirs de police utilisés dans un but illégal <span class="cd">(cd1)</span>.<br><br>EN CONSÉQUENCE, détournement de pouvoir → annulation <span class="csq">(csq1+2)</span>.`},
+"q3-prop-pol":{question:"Quels moyens ? — Disproportion mesure de police (Benjamin)",blocs:[{label:"EN DROIT — Moyen interne : disproportion",html:`<p>Contrôle maximum de proportionnalité (<span class="arret">CE, 1933, Benjamin</span>) : mesure <span class="strong">adaptée</span> <span class="cd">(cd1)</span>, <span class="strong">nécessaire</span> <span class="cd">(cd2)</span>, <span class="strong">proportionnée</span> <span class="cd">(cd3)</span>. Interdiction générale sans exception → illégale <span class="csq">(csq1)</span>.</p>`}],mineure:`EN L'ESPÈCE, l'arrêté instaure une interdiction générale de <span class="ph">[objet]</span> sur <span class="ph">[territoire]</span> sans exception. Pas adaptée <span class="cd">(cd1)</span> : <span class="ph">[trouble causé par des adultes, non par les catégories visées]</span>. Pas nécessaire <span class="cd">(cd2)</span> : <span class="ph">[alternatives moins restrictives existaient]</span>. Disproportionnée <span class="cd">(cd3)</span> au regard de l'atteinte à la liberté d'aller et venir.<br><br>EN CONSÉQUENCE, disproportion → illégale → annulation <span class="csq">(csq1)</span>.`},
+"q3-expropr":{question:"Quels moyens ? — Absence de DUP / expropriation irrégulière",blocs:[{label:"EN DROIT — Violation directe : absence de DUP",html:`<p>Art. <span class="loi">L. 1 Code de l'expropriation</span> : expropriation impossible sans utilité publique <span class="strong">préalablement et formellement constatée</span> <span class="cd">(cd1)</span>. Art. <span class="loi">L. 121-1</span> : DUP = autorité compétente de l'État, non le maire <span class="cd">(cd2)</span>. Sans DUP → prise de possession irrégulière <span class="csq">(csq2)</span>. Droit à juste et préalable indemnité <span class="csq">(csq3)</span>.</p>`},{label:"EN DROIT — Incompétence du maire",html:`<p>Maire = aucune compétence pour prononcer une expropriation sans titre légal <span class="cd">(cd1)</span>. Compétence réservée à l'État (art. <span class="loi">L. 121-1</span>) <span class="csq">(csq1)</span>. Acte du maire → incompétence <span class="csq">(csq2)</span>.</p>`}],mineure:`EN L'ESPÈCE, les agents de <span class="ph">[commune]</span> ont pénétré sur le terrain de <span class="ph">[Nom]</span> le <span class="ph">[date]</span> et procédé à <span class="ph">[destructions]</span>. Aucune DUP n'a été prise <span class="cd">(cd1)</span>, le maire n'étant pas l'autorité compétente <span class="cd">(cd2)</span> → prise de possession sans titre <span class="csq">(csq2)</span>. Aucune indemnité préalable versée <span class="csq">(csq3 non respectée)</span>.<br><br>EN CONSÉQUENCE, illégalité double : absence de DUP <span class="csq">(csq2)</span> + incompétence <span class="csq">(csq2 externe)</span>.`},
+"q4-absent":{question:"Quel type de contrôle ? — Absence de contrôle",blocs:[{label:"EN DROIT",html:`<p>L'intensité du contrôle est proportionnelle à la compétence liée. Si <span class="strong">compétence totalement discrétionnaire</span> — liberté entière de l'administration <span class="cd">(cd1)</span> — le juge s'abstient de tout contrôle sur la qualification <span class="csq">(csq1)</span>. Cas : actes de gouvernement, grâces, légion d'honneur, amnistie, notes d'examen de jury souverain <span class="cd">(cd1)</span>. Seul contrôle résiduel : <span class="strong">erreur manifeste d'appréciation grossière</span> <span class="csq">(csq2)</span>.</p>`}],mineure:`EN L'ESPÈCE, la décision porte sur <span class="ph">[légion d'honneur / note d'examen…]</span> → compétence totalement discrétionnaire <span class="cd">(cd1)</span>. Pas de contrôle sur l'opportunité ni la qualification <span class="csq">(csq1)</span> — seulement l'erreur manifeste grossière <span class="csq">(csq2)</span>.<br><br>EN CONSÉQUENCE, contrôle très limité.`,tip:"Compétence totalement discrétionnaire → absence de contrôle. Sauf erreur manifeste grossière."},
+"q4-restreint":{question:"Quel type de contrôle ? — Contrôle restreint (erreur manifeste)",blocs:[{label:"EN DROIT",html:`<p>Si <span class="strong">compétence discrétionnaire</span> — marge d'appréciation sans être totalement libre <span class="cd">(cd1)</span> — le juge exerce un <span class="strong">contrôle restreint dit minimum</span> <span class="csq">(csq1)</span>. Il sanctionne seulement l'<span class="strong">erreur manifeste d'appréciation</span> : qualification grossièrement fausse, évidente pour tout observateur objectif <span class="cd">(cd1)</span> <span class="csq">(csq2)</span>. Cas : organisation interne du service, urbanisme (<span class="arret">CE, 2016, Notre-Dame-des-Landes</span>).</p>`}],mineure:`EN L'ESPÈCE, la décision — <span class="ph">[nature]</span> — relève d'un domaine à compétence discrétionnaire <span class="cd">(cd1)</span>. Le juge exercera un contrôle restreint <span class="csq">(csq1)</span> et recherchera uniquement une erreur manifeste d'appréciation <span class="cd">(cd1)</span>.<br><br>EN CONSÉQUENCE, contrôle restreint à la seule erreur manifeste <span class="csq">(csq1+2)</span>.`,tip:"Contrôle restreint = erreur manifeste d'appréciation. Pas de contrôle de l'opportunité ni contrôle normal."},
+"q4-normal":{question:"Quel type de contrôle ? — Contrôle normal (entier / complet)",blocs:[{label:"EN DROIT",html:`<p>Si <span class="strong">compétence liée</span> — textes imposent des conditions précises <span class="cd">(cd1)</span> — le juge exerce un <span class="strong">contrôle normal dit entier ou complet</span> <span class="csq">(csq1)</span>. Il vérifie l'<span class="strong">exactitude matérielle des faits</span> (<span class="arret">CE, 1916, Camino</span>) <span class="cd">(cd1)</span> et la <span class="strong">qualification juridique exacte</span> <span class="cd">(cd2)</span> (<span class="arret">CE, 1914, Gomel</span> ; <span class="arret">CE, 2018, Sté Eden</span>). Moindre erreur de qualification → annulation <span class="csq">(csq2)</span>.</p>`}],mineure:`EN L'ESPÈCE, la décision est fondée sur <span class="ph">[texte précis]</span> imposant des conditions précises → compétence liée. Contrôle normal <span class="csq">(csq1)</span> : exactitude matérielle <span class="cd">(cd1)</span> + qualification juridique exacte <span class="cd">(cd2)</span>.<br><br>EN CONSÉQUENCE, contrôle normal : qualification juridique complète vérifiée <span class="csq">(csq1+2)</span>.`},
+"q4-max-sanct":{question:"Quel type de contrôle ? — Sanction disciplinaire (Dahan)",blocs:[{label:"EN DROIT",html:`<p>En matière de sanctions disciplinaires, contrôle à deux niveaux. Sur la <span class="strong">qualification juridique des faits</span> : <span class="strong">contrôle normal (entier)</span> <span class="csq">(csq1)</span> — exactitude matérielle (<span class="arret">CE, 1916, Camino</span>) + les faits constituent-ils une faute ? <span class="cd">(cd1)</span> (<span class="arret">CE, 2013, Dahan</span>). Sur l'<span class="strong">intensité de la sanction</span> : <span class="strong">contrôle maximum</span> de proportionnalité <span class="csq">(csq2)</span> — sanction non disproportionnée par rapport à la gravité des fautes <span class="cd">(cd2)</span> (<span class="arret">CE, 2013, Dahan</span>). En RPC : juge peut réformer lui-même.</p>`}],mineure:`EN L'ESPÈCE, le juge exercera : <span class="strong">contrôle normal</span> <span class="csq">(csq1)</span> — les faits (<span class="ph">[faits reprochés]</span>) sont-ils exacts <span class="cd">(cd1)</span> et constituent-ils une faute ? Puis <span class="strong">contrôle maximum</span> sur l'intensité <span class="csq">(csq2)</span> — le <span class="ph">[type de sanction]</span> est-il proportionné à la gravité des faits <span class="cd">(cd2)</span> ?<br><br>EN CONSÉQUENCE, contrôle NORMAL sur les faits + contrôle MAXIMUM sur l'intensité (Dahan 2013).`,tip:"Normal sur les faits (qualification) + Maximum sur l'intensité (proportionnalité faute/sanction)."},
+"q4-max-police":{question:"Quel type de contrôle ? — Mesure de police (Benjamin)",blocs:[{label:"EN DROIT",html:`<p><span class="strong">Contrôle maximum extrinsèque</span> (<span class="arret">CE, 1933, Benjamin</span>) <span class="csq">(csq1)</span>. Trois volets : <span class="strong">adaptation</span> au trouble <span class="cd">(cd1)</span> ; <span class="strong">nécessité</span> — aucune mesure moins restrictive ne suffit <span class="cd">(cd2)</span> ; <span class="strong">proportionnalité stricte</span> <span class="cd">(cd3)</span> <span class="csq">(csq2)</span>. Mesure d'interdiction générale et absolue non justifiée → annulation.</p>`}],mineure:`EN L'ESPÈCE, l'arrêrant du <span class="ph">[date]</span> instaurant <span class="ph">[objet]</span>. Contrôle maximum extrinsèque <span class="csq">(csq1)</span> : adapté au trouble <span class="ph">[allégué]</span> <span class="cd">(cd1)</span> → nécessaire : alternatives moins restrictives ? <span class="cd">(cd2)</span> → proportionné au regard de l'atteinte à <span class="ph">[liberté visée]</span> <span class="cd">(cd3)</span>.<br><br>EN CONSÉQUENCE, contrôle MAXIMUM extrinsèque : adapté, nécessaire, proportionné (Benjamin 1933) <span class="csq">(csq1+2)</span>.`,tip:"Police admin → contrôle MAXIMUM extrinsèque (Benjamin 1933)."},
+"q4-max-expro":{question:"Quel type de contrôle ? — Expropriation (Ville nouvelle Est)",blocs:[{label:"EN DROIT",html:`<p><span class="strong">Contrôle maximum intrinsèque</span> : bilan coûts/avantages (<span class="arret">CE, 1971, Ville nouvelle Est</span>) <span class="csq">(csq1)</span>. Opération légalement d'utilité publique <span class="cd">(cd1)</span> seulement si les atteintes à la propriété, le coût financier et les inconvénients sociaux ne sont pas excessifs eu égard à l'intérêt qu'elle présente <span class="csq">(csq2)</span>. Le juge apprécie l'opportunité même de l'opération.</p>`}],mineure:`EN L'ESPÈCE, le juge dressera un bilan : intérêt public (<span class="ph">[bénéfices]</span>) vs inconvénients (atteinte propriété de <span class="ph">[Nom]</span>, coût financier) <span class="cd">(cd1)</span>. Si inconvénients excessifs → annulation <span class="csq">(csq2)</span>.<br><br>EN CONSÉQUENCE, contrôle MAXIMUM intrinsèque : bilan coûts/avantages (Ville nouvelle Est 1971) <span class="csq">(csq1+2)</span>.`,tip:"Expropriation → contrôle MAXIMUM intrinsèque : bilan coûts/avantages (CE 1971)."},
+"q5-referes":{question:"Procédure pour stopper rapidement l'exécution ? Quelle voie recommander ?",blocs:[{label:"EN DROIT — Référé suspension (L521-1 CJA)",html:`<p>Art. <span class="loi">L. 521-1 CJA</span> (loi 30 juin 2000) : suspension de l'exécution <span class="csq">(csq1)</span> si : <span class="strong">urgence</span> (préjudice grave difficilement réparable) <span class="cd">(cd1)</span> + <span class="strong">doute sérieux sur la légalité</span> <span class="cd">(cd2)</span>. <span class="strong">Non autonome</span> : accompagne un REP/RPC au fond <span class="cd">(cd3)</span>.</p>`},{label:"EN DROIT — Référé liberté (L521-2 CJA)",html:`<p>Art. <span class="loi">L. 521-2 CJA</span> : recours <span class="strong">autonome</span>, juge statue en <span class="strong">48h</span>. Toutes mesures pour sauvegarder une liberté fondamentale <span class="csq">(csq2)</span>. Conditions : <span class="strong">urgence particulière</span> <span class="cd">(cd4)</span> + <span class="strong">atteinte grave et manifestement illégale</span> à une <span class="strong">liberté fondamentale</span> <span class="cd">(cd5)</span>. Libertés fondamentales : liberté d'aller et venir, droit de propriété (<span class="arret">CE, ord. 2013, Chirongui</span>), libre admin CT (<span class="arret">CE, ord. 2001, Venelles</span>), environnement sain (<span class="arret">CE, 20 sept. 2022</span>).</p>`}],mineure:`EN L'ESPÈCE, l'arrêté du <span class="ph">[date]</span> produit des effets immédiats. <span class="strong">Référé suspension</span> : accompagner le REP <span class="cd">(cd3)</span> + urgence <span class="cd">(cd1)</span> + doute sérieux <span class="cd">(cd2)</span>. <span class="strong">Référé liberté</span> : plus adapté si atteinte grave et manifestement illégale <span class="cd">(cd5)</span> à la liberté d'aller et venir de manière disproportionnée, urgence caractérisée <span class="cd">(cd4)</span>.<br><br>EN CONSÉQUENCE, référé liberté recommandé <span class="csq">(csq2)</span> : juge statue en 48h.`,warn:"Liberté → si atteinte grave ET manifestement illégale à une liberté fondamentale. Suspension → si illégalité pas manifeste."},
+"q6-voiefait":{question:"Quel ordre de juridiction ? Comment se répartit la compétence JA/JJ ?",blocs:[{label:"EN DROIT — TC 2013 Bergoend",html:`<p>Par exception, la <span class="strong">voie de fait</span> confère compétence au JJ dans les cas les plus graves (<span class="arret">TC, 17 juin 2013, Bergoend</span>). Deux critères cumulatifs. <span class="strong">Objectif</span> : exécution forcée irrégulière <span class="cd">(cd1a)</span> OU décision insusceptible de se rattacher à un pouvoir administratif <span class="cd">(cd1b)</span>. <span class="strong">Subjectif</span> : atteinte à la liberté individuelle (art. 66C) <span class="cd">(cd2a)</span> OU <span class="strong">extinction du droit de propriété</span> <span class="cd">(cd2b)</span>. JA : illégalité + injonction de cesser <span class="csq">(csq1)</span>. JJ : indemnités <span class="csq">(csq2)</span>.</p>`}],mineure:`EN L'ESPÈCE, les agents de <span class="ph">[commune]</span> ont pénétré sur le terrain de <span class="ph">[Nom]</span> le <span class="ph">[date]</span>, procédant à <span class="ph">[actes]</span> sans titre légal → exécution forcée irrégulière <span class="cd">(cd1a)</span>. Les destructions tendent à éteindre le droit de propriété <span class="cd">(cd2b)</span>.<br><br>EN CONSÉQUENCE, voie de fait caractérisée. JA : faire cesser l'atteinte <span class="csq">(csq1)</span>. JJ : indemnités pour les destructions <span class="csq">(csq2)</span>.`,warn:"Simple atteinte → JA compétent. Extinction du droit de propriété → JJ pour les indemnités."},
+"q7-resp":{question:"Quelles voies d'action en responsabilité ? Quelles chances de succès ?",blocs:[{label:"EN DROIT — Responsabilité pour faute de service",html:`<p>Faute de service + préjudice + lien de causalité <span class="cd">(cd1)</span> → indemnisation <span class="csq">(csq1)</span>. La <span class="strong">faute de la victime</span> peut exonérer partiellement ou totalement <span class="csq">(csq2)</span>.</p>`},{label:"EN DROIT — Responsabilité sans faute pour risque",html:`<p>Risque spécial créé par activités dangereuses (armes, grenades) → responsabilité sans faute <span class="csq">(csq3)</span>. Conditions <span class="cd">(cd2)</span> : risque spécial et anormal, préjudice anormal et spécial, lien de causalité. Faute de la victime peut réduire le quantum.</p>`}],mineure:`EN L'ESPÈCE, <span class="ph">[Nom]</span> a subi <span class="ph">[préjudice]</span> lors de <span class="ph">[opération du date]</span>. <span class="strong">Faute</span> : usage de <span class="ph">[grenades]</span> → faute de service possible <span class="cd">(cd1)</span> mais <span class="ph">[Nom]</span> est restée sur les lieux malgré les sommations → faute de la victime → exonération partielle <span class="csq">(csq2)</span>. <span class="strong">Risque</span> : utilisation de grenades = risque spécial <span class="cd">(cd2)</span>. Préjudice grave et spécial. Faute de la victime réduit le quantum sans faire disparaître ce fondement <span class="csq">(csq3)</span>.<br><br>EN CONSÉQUENCE, responsabilité sans faute pour risque = meilleure voie, sous réserve de la faute partielle de la victime.`,warn:"Faute de la victime restée malgré les sommations → exonération partielle. À mentionner systématiquement."}
+};
+
+let history=[];
+function show(screenId,title,dots,withBar){history.push({s:'home'});document.getElementById('header-title').textContent=title;document.getElementById('header-sub').classList.remove('visible');document.getElementById('back-btn').classList.add('visible');setDots(dots);document.getElementById('bottom-bar').classList[withBar?'add':'remove']('visible');showScreen(screenId);}
+function selectQ(qId){history.push({s:'q'});const q=Q[qId];document.getElementById('header-sub').textContent=q.label;document.getElementById('header-sub').classList.add('visible');document.getElementById('header-title').textContent='Thème des faits';document.getElementById('back-btn').classList.add('visible');setDots(1);const opts=document.getElementById('theme-options');opts.innerHTML='';q.themes.forEach(t=>{const b=document.createElement('button');b.className='theme-btn';b.onclick=()=>selectTheme(t.id);b.innerHTML=`<div class="theme-dot ${t.dot}"></div><div><div class="theme-btn-text">${t.label}</div>${t.sub?`<div class="theme-btn-sub">${t.sub}</div>`:''}</div>`;opts.appendChild(b)});document.getElementById('bottom-bar').classList.remove('visible');showScreen('screen-theme');}
+function selectTheme(id){history.push({s:'theme'});const m=M[id];if(!m)return;document.getElementById('header-title').textContent='Majeure + Mineure';setDots(2);let h='';h+=`<div class="majeure-q"><div class="majeure-q-label">Question type</div><div class="majeure-q-text">${m.question}</div></div>`;m.blocs.forEach(b=>{h+=`<div class="bloc-wrap b-droit"><div class="bloc-header">${b.label}</div><div class="bloc-body majeure-body">${b.html}</div></div>`;});if(m.warn)h+=`<div class="b-warn">${m.warn}</div>`;if(m.tip)h+=`<div class="b-tip">${m.tip}</div>`;if(m.mineure){h+=`<div class="section-divider"><span>Mineure — template à adapter</span></div><div class="bloc-wrap b-mineure"><div class="bloc-header">EN L'ESPÈCE → EN CONSÉQUENCE</div><div class="bloc-body majeure-body">${m.mineure}</div></div><div class="b-tip">Parties en doré = à remplacer par les faits de ton sujet.</div>`;}document.getElementById('majeure-content').innerHTML=h;document.getElementById('bottom-bar').classList.add('visible');showScreen('screen-majeure');}
+function goBack(){if(!history.length)return;const p=history.pop();document.getElementById('bottom-bar').classList.remove('visible');if(p.s==='theme'){document.getElementById('header-title').textContent='Thème des faits';setDots(1);showScreen('screen-theme');}else{document.getElementById('header-title').textContent='Cas Pratique — DA L2';document.getElementById('header-sub').classList.remove('visible');document.getElementById('back-btn').classList.remove('visible');setDots(0);showScreen('screen-q');}}
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');document.getElementById('main').scrollTop=0;}
+function setDots(a){['dot1','dot2','dot3'].forEach((d,i)=>{const e=document.getElementById(d);e.classList.remove('active','done');if(i<a)e.classList.add('done');else if(i===a)e.classList.add('active');});}
+function copyPage(){const src=document.querySelector('.screen.active');const t=src?src.innerText:'';if(navigator.clipboard){navigator.clipboard.writeText(t).then(showToast);}else{const a=document.createElement('textarea');a.value=t;a.style.cssText='position:fixed;opacity:0';document.body.appendChild(a);a.select();document.execCommand('copy');document.body.removeChild(a);showToast();}}
+function showToast(){const t=document.getElementById('toast');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2000);}
+</script>
+</body>
+</html>
